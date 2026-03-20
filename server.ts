@@ -10,12 +10,13 @@ const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  // Usar el puerto del entorno o el 3000 por defecto
+  const PORT = process.env.PORT || 3000;
 
-  // Habilitar CORS para que el APK pueda conectar
+  // Habilitar CORS
   app.use((cors as any)());
 
-  // Proxy para evitar errores de seguridad (CORS/SSL) con la web del gobierno
+  // Proxy para licitaciones del gobierno de España
   app.get("/api/contracts", async (req, res) => {
     try {
       const response = await fetch("https://contrataciondelestado.es/sindicacion/sindicacion_643/licitacionesPerfilesContratanteCompleto3.atom", {
@@ -40,16 +41,16 @@ async function startServer() {
     });
     app.use((vite as any).middlewares);
   } else {
-    // Modo Producción (Servir archivos estáticos)
+    // Modo Producción
     const distPath = path.resolve(__dirname, "dist");
-    app.use((express as any).static(distPath));
+    app.use(express.static(distPath));
     app.get("*", (req, res) => {
       res.sendFile(path.resolve(distPath, "index.html"));
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`);
+  app.listen(Number(PORT), "0.0.0.0", () => {
+    console.log(`Server running on port ${PORT}`);
   });
 }
 
